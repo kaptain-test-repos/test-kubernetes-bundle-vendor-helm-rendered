@@ -1,0 +1,34 @@
+apiVersion: kaptain.org/1.13
+kind: kubernetes-bundle-vendor-helm-rendered
+
+spec:
+  global:
+    projectName:
+      stripRepositoryNamePrefix: test
+    tokens:
+      delimiterStyle: stringtemplate
+  main:
+    vendorHelmRendered:
+      ociChart: oci://registry-1.docker.io/bitnamicharts/nginx
+      useProjectNameAsFullnameOverride: true
+      moveFiles:
+        - source: templates/deployment.yaml
+          destination: base/deployment.yaml
+        - source: templates/svc.yaml
+          destination: base/service.yaml
+      sedReplace:
+        global:
+          - 's|release-name|test-kube-bundle-helm|g'
+      yqTransform:
+        global:
+          - '.metadata.namespace = "test-namespace"'
+      imageRetags:
+        - sourceImageUri: docker.io/bitnamilegacy/nginx:1.29.1
+          tagSuffix: '-custom'
+    hooks:
+      preBuild: test-hooks/pre-build.bash
+      preTaggingTests: test-hooks/pre-tagging-tests.bash
+      postVersionsAndNaming: test-hooks/post-versions-and-naming.bash
+      prePackagePrepare: test-hooks/pre-package-prepare.bash
+      postPackageTests: test-hooks/post-package-tests.bash
+      postBuild: test-hooks/post-build.bash
