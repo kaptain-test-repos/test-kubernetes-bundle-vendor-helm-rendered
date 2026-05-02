@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kubernetes-bundle-vendor-helm-rendered
-  namespace: "${Environment}"
+  namespace: "$Environment$"
   labels:
     app.kubernetes.io/instance: kubernetes-bundle-vendor-helm-rendered
     app.kubernetes.io/managed-by: Kaptain
